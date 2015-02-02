@@ -1,0 +1,28 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion parent.ext.compileSdkVersion
+    buildToolsVersion parent.ext.buildToolsVersion
+
+    defaultConfig {
+        compileSdkVersion parent.ext.compileSdkVersion
+        buildToolsVersion parent.ext.buildToolsVersion
+
+        defaultConfig {
+            applicationId "com.carlosdelachica.timelydigitalclock.sample"
+            minSdkVersion parent.ext.minSdkVersion
+            targetSdkVersion parent.ext.targetSdkVersion
+            versionCode = parent.ext.versionCode;
+            versionName = parent.ext.versionName
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+}
+
+dependencies {
+    compile project(':library')
+}
