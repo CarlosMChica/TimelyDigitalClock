@@ -15,15 +15,13 @@ import android.widget.TextView;
 import com.carlosdelachica.timelydigitalclock.model.data.base.TimeSet;
 import com.carlosdelachica.timelydigitalclock.model.data.base.TimeUnitSet;
 import com.carlosdelachica.timelydigitalclock.model.data.clock.Clock;
-import com.nineoldandroids.animation.Animator;
-import com.nineoldandroids.animation.AnimatorListenerAdapter;
 import com.nineoldandroids.animation.ObjectAnimator;
 
 import butterknife.ButterKnife;
 
 public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockCallback {
 
-    public static final int DURATION = 1000;
+    public static final int DURATION = 500;
 
     private TimelyView hoursTensView, hoursUnitsView, minutesTensView, minutesUnitsView, secondsTendsView,
             secondsUnitsView;
@@ -167,12 +165,6 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
                 final ObjectAnimator animator = timelyView.animate(updateTens ? lastTimeUnitSet.getActualValueTens() : lastTimeUnitSet.getActualValueUnit(),
                         updateTens ? timeUnitSet.getActualValueTens() : timeUnitSet.getActualValueUnit());
                 animator.setDuration(DURATION);
-                animator.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-//                animator = null;
-                    }
-                });
                 animator.start();
 
             }
