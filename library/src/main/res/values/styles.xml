@@ -2,5 +2,7 @@
 <resources>
     <declare-styleable name="TimelyDigitalClockView">
         <attr name="dgTextSize" format="dimension"/>
+        <attr name="dgSecondsTextSize" format="dimension"/>
+        <attr name="dgTextColor" format="color"/>
     </declare-styleable>
 </resources>

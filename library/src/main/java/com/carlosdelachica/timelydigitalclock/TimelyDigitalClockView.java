@@ -30,14 +30,18 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
 
     private TimeSet lastTimeSet;
     private Handler handler = new Handler(Looper.getMainLooper());
-    private int textSize = Integer.MAX_VALUE;
+    private int textSize;
+    private int textColor;
+    private int secondsTextSize;
 
     public TimelyDigitalClockView(Context context) {
-        this(context, null);
+        super(context);
+        init(context, null);
     }
 
     public TimelyDigitalClockView(Context context, AttributeSet attrs) {
-        this(context, attrs, -1);
+        super(context, attrs);
+        init(context, attrs);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -60,14 +64,10 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
                 attrs,
                 R.styleable.TimelyDigitalClockView,
                 0, 0);
-        int dimensionPixelSize = a.getDimensionPixelSize(R.styleable.TimelyDigitalClockView_dgTextSize, -1);
-        if (dimensionPixelSize > 0) {
-            textSize = dimensionPixelSize;
-        }
-    }
-
-    private void initClock() {
-        new Clock(this);
+        textSize = a.getDimensionPixelSize(R.styleable.TimelyDigitalClockView_dgTextSize, -1);
+        secondsTextSize = a.getDimensionPixelSize(R.styleable.TimelyDigitalClockView_dgSecondsTextSize, -1);
+        textColor = a.getColor(R.styleable.TimelyDigitalClockView_dgTextColor, -1);
+        a.recycle();
     }
 
     private void bindViews(View rootView) {
@@ -77,16 +77,28 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
         minutesUnitsView = ButterKnife.findById(rootView, R.id.minutesUnitsView);
         secondsTendsView = ButterKnife.findById(rootView, R.id.secondsTensView);
         secondsUnitsView = ButterKnife.findById(rootView, R.id.secondsUnitsView);
-
         colonText = ButterKnife.findById(rootView, R.id.digitalClockColon);
         secondColonText = ButterKnife.findById(rootView, R.id.secondDigitalClockColon);
+    }
 
-        if (textSize > -1) {
-            adjustClockItemsSize();
+    private void initClock() {
+        initProperties();
+        new Clock(this);
+    }
+
+    private void initProperties() {
+        if (textSize != -1) {
+            initClockItemsSize();
+        }
+        if (textColor != -1) {
+            initClockItemsTextColor();
+        }
+        if (secondsTextSize != -1) {
+            initSecondItemsTextSize();
         }
     }
 
-    private void adjustClockItemsSize() {
+    private void initClockItemsSize() {
         hoursTensView.setTextSize(textSize);
         hoursUnitsView.setTextSize(textSize);
         minutesTensView.setTextSize(textSize);
@@ -98,6 +110,21 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
         secondColonText.setTextSize(textSize);
     }
 
+    private void initClockItemsTextColor() {
+        hoursTensView.setTextColor(textColor);
+        hoursUnitsView.setTextColor(textColor);
+        minutesTensView.setTextColor(textColor);
+        minutesUnitsView.setTextColor(textColor);
+        secondsTendsView.setTextColor(textColor);
+        secondsUnitsView.setTextColor(textColor);
+        colonText.setTextColor(textColor);
+        secondColonText.setTextColor(textColor);
+    }
+
+    private void initSecondItemsTextSize() {
+        secondsTendsView.setTextSize(secondsTextSize);
+        secondsUnitsView.setTextSize(secondsTextSize);
+    }
 
     @Override
     public void onTimeUpdated(TimeSet timeSet) {
@@ -176,6 +203,6 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         textSize = Math.min(textSize,
                 (getMeasuredWidth() / 6) + (colonText.getMeasuredWidth() * 2));
-        adjustClockItemsSize();
+        initClockItemsSize();
     }
 }

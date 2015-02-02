@@ -14,7 +14,7 @@ import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.util.Property;
 
 public class TimelyView extends View {
-    private static final float RATIO = 1f;
+
     private static final Property<TimelyView, float[][]> CONTROL_POINTS_PROPERTY = new Property<TimelyView, float[][]>(float[][].class, "controlPoints") {
         @Override
         public float[][] get(TimelyView object) {
@@ -26,10 +26,11 @@ public class TimelyView extends View {
             object.setControlPoints(value);
         }
     };
-    private Paint mPaint = null;
-    private Path mPath = null;
+    private Paint paint = null;
+    private Path path = null;
     private float[][] controlPoints = null;
     private int textSize = -1;
+    private int textColor = Color.BLACK;
 
     public TimelyView(Context context) {
         super(context);
@@ -80,16 +81,16 @@ public class TimelyView extends View {
         int width = getMeasuredWidth();
 
         float minDimen = height > width ? width : height;
-        minDimen -= mPaint.getStrokeWidth();
+        minDimen -= paint.getStrokeWidth();
 
-        mPath.reset();
-        mPath.moveTo(minDimen * controlPoints[0][0], minDimen * controlPoints[0][1]);
+        path.reset();
+        path.moveTo(minDimen * controlPoints[0][0], minDimen * controlPoints[0][1]);
         for (int i = 1; i < length; i += 3) {
-            mPath.cubicTo(minDimen * controlPoints[i][0], minDimen * controlPoints[i][1],
+            path.cubicTo(minDimen * controlPoints[i][0], minDimen * controlPoints[i][1],
                     minDimen * controlPoints[i + 1][0], minDimen * controlPoints[i + 1][1],
                     minDimen * controlPoints[i + 2][0], minDimen * controlPoints[i + 2][1]);
         }
-        canvas.drawPath(mPath, mPaint);
+        canvas.drawPath(path, paint);
     }
 
     @Override
@@ -97,23 +98,29 @@ public class TimelyView extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         int width = (int) ((getMeasuredWidth() > textSize ? textSize : getMeasuredWidth())
-                + mPaint.getStrokeWidth());
-        int height = (int) (textSize + mPaint.getStrokeWidth());
+                + paint.getStrokeWidth());
+        int height = (int) (textSize + paint.getStrokeWidth());
 
         setMeasuredDimension(width, height);
     }
 
     private void init() {
         // A new paint with the style as stroke.
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setColor(Color.BLACK);
-        mPaint.setStrokeWidth(5.0f);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPath = new Path();
+        paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(textColor);
+        paint.setStrokeWidth(5.0f);
+        paint.setStyle(Paint.Style.STROKE);
+        path = new Path();
     }
 
     public void setTextSize(int textSize) {
         this.textSize = textSize;
     }
+
+    public void setTextColor(int textColor) {
+        this.textColor = textColor;
+        paint.setColor(textColor);
+    }
+
 }
