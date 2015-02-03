@@ -19,13 +19,4 @@
         app:dgTextColor="@android:color/darker_gray"
         />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start"
-        android:id="@+id/button"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
-
-
 </RelativeLayout>
