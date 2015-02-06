@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
@@ -12,6 +12,10 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:dg_textSize="70sp"
+        app:dg_secondsTextSize="40sp"
+        app:dg_textStrokeWidth="3dp"
+        app:dg_secondsTextStrokeWidth="1dp"
         />
 
-</RelativeLayout>
+</FrameLayout>

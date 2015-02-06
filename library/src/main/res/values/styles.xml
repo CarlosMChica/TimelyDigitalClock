@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="TimelyDigitalClockView">
-        <attr name="dgTextSize" format="dimension"/>
-        <attr name="dgSecondsTextSize" format="dimension"/>
-        <attr name="dgTextColor" format="color"/>
+        <attr name="dg_textSize" format="dimension"/>
+        <attr name="dg_secondsTextSize" format="dimension"/>
+        <attr name="dg_textStrokeWidth" format="dimension"/>
+        <attr name="dg_secondsTextStrokeWidth" format="dimension"/>
+        <attr name="dg_textColor" format="color"/>
+        <attr name="dg_24hFormat" format="boolean"/>
     </declare-styleable>
 </resources>

@@ -26,6 +26,7 @@ public class TimelyView extends View {
             object.setControlPoints(value);
         }
     };
+    private static final float DEFAULT_PAINT_STROKE_WIDTH = 5.0f;
     private Paint paint = null;
     private Path path = null;
     private float[][] controlPoints = null;
@@ -78,14 +79,12 @@ public class TimelyView extends View {
         int strokeWidth = (int) paint.getStrokeWidth();
         int height = getMeasuredHeight() - strokeWidth;
         int width = getMeasuredWidth() - strokeWidth;
-//
-//        float minDimen = height > width ? width : height;
-//        minDimen -= strokeWidth;
 
         path.reset();
         path.moveTo(width * controlPoints[0][0], height * controlPoints[0][1]);
         for (int i = 1; i < length; i += 3) {
-            path.cubicTo(width * controlPoints[i][0], height * controlPoints[i][1],
+            path.cubicTo(
+                    width * controlPoints[i][0], height * controlPoints[i][1],
                     width * controlPoints[i + 1][0], height * controlPoints[i + 1][1],
                     width * controlPoints[i + 2][0], height * controlPoints[i + 2][1]);
         }
@@ -96,16 +95,17 @@ public class TimelyView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int height;
-        if (textSize != -1 && textSize < getMeasuredWidth()) {
+        if (textSize != -1) {
             height = textSize;
         } else {
             height = getMeasuredHeight();
         }
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec) ;
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-        setMeasuredDimension(getMeasuredWidth(), height);
+        int measuredWidth = getMeasuredWidth();
+        setMeasuredDimension((int) (measuredWidth / 1.25), height);
     }
 
     private void init() {
@@ -113,7 +113,7 @@ public class TimelyView extends View {
         paint = new Paint();
         paint.setAntiAlias(true);
         paint.setColor(Color.WHITE);
-        paint.setStrokeWidth(5.0f);
+        paint.setStrokeWidth(DEFAULT_PAINT_STROKE_WIDTH);
         paint.setStyle(Paint.Style.STROKE);
         path = new Path();
     }
@@ -126,4 +126,7 @@ public class TimelyView extends View {
         paint.setColor(textColor);
     }
 
+    public void setStrokeWidth(int strokeWidth) {
+        paint.setStrokeWidth(strokeWidth);
+    }
 }

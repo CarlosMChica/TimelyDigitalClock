@@ -22,9 +22,9 @@
         android:id="@+id/minutesUnitsView"
         layout="@layout/timely_digital_clock_item" />
 
-    <include
-        android:id="@+id/secondDigitalClockColon"
-        layout="@layout/timely_digital_clock_colon" />
+    <!--<include-->
+        <!--android:id="@+id/secondDigitalClockColon"-->
+        <!--layout="@layout/timely_digital_clock_colon" />-->
 
     <include
         android:id="@+id/secondsTensView"

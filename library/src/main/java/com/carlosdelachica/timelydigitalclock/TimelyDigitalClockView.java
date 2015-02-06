@@ -3,13 +3,14 @@ package com.carlosdelachica.timelydigitalclock;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,21 +21,21 @@ import com.nineoldandroids.animation.ObjectAnimator;
 
 import butterknife.ButterKnife;
 
-import static android.view.ViewGroup.LayoutParams.*;
-
 public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockCallback {
 
     public static final int DURATION = 500;
 
     private TimelyView hoursTensView, hoursUnitsView, minutesTensView, minutesUnitsView, secondsTendsView, secondsUnitsView;
     private TextView colonText;
-    private TextView secondColonText;
 
     private TimeSet lastTimeSet;
     private Handler handler = new Handler(Looper.getMainLooper());
     private int textSize;
     private int textColor;
     private int secondsTextSize;
+    private int strokeWidth;
+    private int secondsStrokeWidth;
+    private boolean format24H;
 
     public TimelyDigitalClockView(Context context) {
         super(context);
@@ -55,7 +56,7 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
     private void init(Context context, AttributeSet attrs) {
         initAttrs(context, attrs);
         setOrientation(HORIZONTAL);
-        setLayoutParams(new LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
+        setGravity(Gravity.CENTER);
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rootView = inflater.inflate(R.layout.timely_digital_clock, this, true);
         bindViews(rootView);
@@ -67,9 +68,12 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
                 attrs,
                 R.styleable.TimelyDigitalClockView,
                 0, 0);
-        textSize = a.getDimensionPixelSize(R.styleable.TimelyDigitalClockView_dgTextSize, -1);
-        secondsTextSize = a.getDimensionPixelSize(R.styleable.TimelyDigitalClockView_dgSecondsTextSize, -1);
-        textColor = a.getColor(R.styleable.TimelyDigitalClockView_dgTextColor, -1);
+        textSize = a.getDimensionPixelSize(R.styleable.TimelyDigitalClockView_dg_textSize, -1);
+        secondsTextSize = a.getDimensionPixelSize(R.styleable.TimelyDigitalClockView_dg_secondsTextSize, -1);
+        strokeWidth = a.getDimensionPixelSize(R.styleable.TimelyDigitalClockView_dg_textStrokeWidth, -1);
+        secondsStrokeWidth = a.getDimensionPixelSize(R.styleable.TimelyDigitalClockView_dg_secondsTextStrokeWidth, -1);
+        textColor = a.getColor(R.styleable.TimelyDigitalClockView_dg_textColor, Color.WHITE);
+        format24H = a.getBoolean(R.styleable.TimelyDigitalClockView_dg_24hFormat, true);
         a.recycle();
     }
 
@@ -81,21 +85,29 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
         secondsTendsView = ButterKnife.findById(rootView, R.id.secondsTensView);
         secondsUnitsView = ButterKnife.findById(rootView, R.id.secondsUnitsView);
         colonText = ButterKnife.findById(rootView, R.id.digitalClockColon);
-        secondColonText = ButterKnife.findById(rootView, R.id.secondDigitalClockColon);
     }
 
     private void initClock() {
         initProperties();
-        new Clock(this);
+        new Clock(format24H
+                ? Clock.ClockMode.FORMAT_24
+                : Clock.ClockMode.FORMAT_12
+                , this);
     }
 
     private void initProperties() {
-        if (textSize != -1) {
-            initClockItemsSize();
-        }
-        if (textColor != -1) {
-            initClockItemsTextColor();
-        }
+        initClockItemsStrokeWidth();
+        initClockItemsSize();
+        initClockItemsTextColor();
+    }
+
+    private void initClockItemsStrokeWidth() {
+        hoursTensView.setStrokeWidth(strokeWidth);
+        hoursUnitsView.setStrokeWidth(strokeWidth);
+        minutesTensView.setStrokeWidth(strokeWidth);
+        minutesUnitsView.setStrokeWidth(strokeWidth);
+        secondsTendsView.setStrokeWidth(secondsStrokeWidth == -1 ? strokeWidth : secondsStrokeWidth);
+        secondsUnitsView.setStrokeWidth(secondsStrokeWidth == -1 ? strokeWidth : secondsStrokeWidth);
     }
 
     private void initClockItemsSize() {
@@ -105,9 +117,7 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
         minutesUnitsView.setTextSize(textSize);
         secondsTendsView.setTextSize(secondsTextSize == -1 ? textSize : secondsTextSize);
         secondsUnitsView.setTextSize(secondsTextSize == -1 ? textSize : secondsTextSize);
-//
-//        colonText.setTextSize(textSize);
-//        secondColonText.setTextSize(textSize);
+        colonText.setTextSize(textSize / 6);
     }
 
     private void initClockItemsTextColor() {
@@ -118,7 +128,6 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
         secondsTendsView.setTextColor(textColor);
         secondsUnitsView.setTextColor(textColor);
         colonText.setTextColor(textColor);
-        secondColonText.setTextColor(textColor);
     }
 
     @Override
@@ -184,8 +193,14 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
         handler.post(new Runnable() {
             @Override
             public void run() {
-                final ObjectAnimator animator = timelyView.animate(updateTens ? lastTimeUnitSet.getActualValueTens() : lastTimeUnitSet.getActualValueUnit(),
-                        updateTens ? timeUnitSet.getActualValueTens() : timeUnitSet.getActualValueUnit());
+                final ObjectAnimator animator = timelyView.animate(
+                        updateTens
+                                ? lastTimeUnitSet.getActualValueTens()
+                                : lastTimeUnitSet.getActualValueUnit(),
+                        updateTens
+                                ? timeUnitSet.getActualValueTens()
+                                : timeUnitSet.getActualValueUnit()
+                );
                 animator.setDuration(DURATION);
                 animator.start();
 
