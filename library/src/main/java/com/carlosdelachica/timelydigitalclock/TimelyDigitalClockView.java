@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,12 +20,13 @@ import com.nineoldandroids.animation.ObjectAnimator;
 
 import butterknife.ButterKnife;
 
+import static android.view.ViewGroup.LayoutParams.*;
+
 public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockCallback {
 
     public static final int DURATION = 500;
 
-    private TimelyView hoursTensView, hoursUnitsView, minutesTensView, minutesUnitsView, secondsTendsView,
-            secondsUnitsView;
+    private TimelyView hoursTensView, hoursUnitsView, minutesTensView, minutesUnitsView, secondsTendsView, secondsUnitsView;
     private TextView colonText;
     private TextView secondColonText;
 
@@ -53,6 +55,7 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
     private void init(Context context, AttributeSet attrs) {
         initAttrs(context, attrs);
         setOrientation(HORIZONTAL);
+        setLayoutParams(new LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rootView = inflater.inflate(R.layout.timely_digital_clock, this, true);
         bindViews(rootView);
@@ -93,9 +96,6 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
         if (textColor != -1) {
             initClockItemsTextColor();
         }
-        if (secondsTextSize != -1) {
-            initSecondItemsTextSize();
-        }
     }
 
     private void initClockItemsSize() {
@@ -103,11 +103,11 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
         hoursUnitsView.setTextSize(textSize);
         minutesTensView.setTextSize(textSize);
         minutesUnitsView.setTextSize(textSize);
-        secondsTendsView.setTextSize(textSize);
-        secondsUnitsView.setTextSize(textSize);
-
-        colonText.setTextSize(textSize);
-        secondColonText.setTextSize(textSize);
+        secondsTendsView.setTextSize(secondsTextSize == -1 ? textSize : secondsTextSize);
+        secondsUnitsView.setTextSize(secondsTextSize == -1 ? textSize : secondsTextSize);
+//
+//        colonText.setTextSize(textSize);
+//        secondColonText.setTextSize(textSize);
     }
 
     private void initClockItemsTextColor() {
@@ -119,11 +119,6 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
         secondsUnitsView.setTextColor(textColor);
         colonText.setTextColor(textColor);
         secondColonText.setTextColor(textColor);
-    }
-
-    private void initSecondItemsTextSize() {
-        secondsTendsView.setTextSize(secondsTextSize);
-        secondsUnitsView.setTextSize(secondsTextSize);
     }
 
     @Override
@@ -158,15 +153,15 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
 
     private void updateTime(TimeUnitSet timeUnitSet, TimeUnitSet lastTimeUnitSet) {
         if (timeUnitSet.getActualValueTens() != lastTimeUnitSet.getActualValueTens()) {
-            udpateTimeUnitView(timeUnitSet, lastTimeUnitSet, true);
+            updateTimeUnitView(timeUnitSet, lastTimeUnitSet, true);
         }
         if (timeUnitSet.getActualValueUnit() != lastTimeUnitSet.getActualValueUnit()) {
-            udpateTimeUnitView(timeUnitSet, lastTimeUnitSet, false);
+            updateTimeUnitView(timeUnitSet, lastTimeUnitSet, false);
         }
 
     }
 
-    private void udpateTimeUnitView(TimeUnitSet timeUnitSet, TimeUnitSet lastTimeUnitSet,
+    private void updateTimeUnitView(TimeUnitSet timeUnitSet, TimeUnitSet lastTimeUnitSet,
                                     boolean updateTens) {
         switch (timeUnitSet.getTimeUnitType()) {
             case SECONDS:
@@ -201,8 +196,8 @@ public class TimelyDigitalClockView extends LinearLayout implements Clock.ClockC
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        textSize = Math.min(textSize,
-                (getMeasuredWidth() / 6) + (colonText.getMeasuredWidth() * 2));
-        initClockItemsSize();
+        int measuredHeight = getMeasuredHeight();
+        int measuredWidth = getMeasuredWidth();
+//        textSize = Math.min(textSize, (getMeasuredWidth() / 6) + (colonText.getMeasuredWidth() * 2));
     }
 }
